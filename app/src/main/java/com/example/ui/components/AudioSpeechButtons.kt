@@ -66,7 +66,7 @@ fun AudioSpeechButtons(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "۰.۷x",
+                    text = "۰.۶x",
                     fontWeight = FontWeight.Bold,
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSecondaryContainer

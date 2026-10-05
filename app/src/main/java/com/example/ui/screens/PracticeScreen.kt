@@ -133,6 +133,7 @@ private fun LessonExercisesSection(
 
         if (currentExercise != null) {
             item {
+                Spacer(modifier = Modifier.height(6.dp))
                 ExactExerciseQuestionView(
                     exercise = currentExercise,
                     questionNumber = safeIndex + 1,
@@ -147,7 +148,8 @@ private fun LessonExercisesSection(
                         }
                     },
                     onPlayAudio = onPlayAudio,
-                    nextButtonText = if (safeIndex < exercises.size - 1) "سوال بعدی" else "شروع مجدد تمرین این درس"
+                    nextButtonText = if (safeIndex < exercises.size - 1) "سوال بعدی" else "شروع مجدد تمرین این درس",
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
         } else {
@@ -230,6 +232,7 @@ private fun VerbConjugationSection(
         }
 
         item {
+            Spacer(modifier = Modifier.height(6.dp))
             ExactExerciseQuestionView(
                 exercise = simulatedExercise,
                 questionNumber = drillPronounIndex + 1,
@@ -239,7 +242,8 @@ private fun VerbConjugationSection(
                     drillPronounIndex = (drillPronounIndex + 1) % currentVerb.conjugations.size
                 },
                 onPlayAudio = onPlayAudio,
-                nextButtonText = if (drillPronounIndex < currentVerb.conjugations.size - 1) "ضمیر بعدی" else "شروع مجدد صرف این فعل"
+                nextButtonText = if (drillPronounIndex < currentVerb.conjugations.size - 1) "ضمیر بعدی" else "شروع مجدد صرف این فعل",
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
     }

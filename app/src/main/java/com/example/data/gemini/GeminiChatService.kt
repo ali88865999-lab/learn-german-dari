@@ -77,7 +77,49 @@ class GeminiChatService {
           ]
         }
         ```
-        ۳. هرگاه کاربر از شما ساخت جمله خواست (مانند «۱۰ جمله بساز»)، جملات را به صورت لیست شماره‌دار با فرمت:
+        ۳. هرگاه کاربر از شما مبحث گرامر یا تدریس قواعد گرامری خواست (مانند «گرامر آکوزاتیو را یاد بده» یا «یک مبحث گرامر بساز»)، قواعد را با توضیحات کامل دری، جملات نمونه (همراه با تلفظ به خط فارسی و ترجمه دری) و تمرین‌های ۴ گزینه‌ای آموزش دهید و علاوه بر توضیحات متنی، کد JSON مبحث گرامر را در قالب یک بلوک کد JSON معتبر با اسکیمای زیر ارائه دهید تا کاربر بتواند آن را از بخش «افزودن مبحث گرامر» وارد نماید:
+        ```json
+        {
+          "id": "grammar_topic_1",
+          "number": 2,
+          "titleGerman": "Akkusativ",
+          "titleDari": "حالت مفعولی مستقیم (Akkusativ)",
+          "sections": [
+            {
+              "title": "تعریف و مفهوم حالت آکوزاتیو",
+              "bodyDari": "حالت آکوزاتیو برای مفعول مستقیم جمله استفاده می‌شود. وقتی کاری روی چیزی یا کسی انجام می‌شود، آن اسم در حالت آکوزاتیو قرار می‌گیرد."
+            },
+            {
+              "title": "تغییرات حروف تعریف در آکوزاتیو",
+              "bodyDari": "در حالت آکوزاتیو فقط حرف تعریف مذکر (der / ein) تغییر می‌کند:\nder  ->  den\nein  ->  einen\nhier: die و das و صورت جمع بدون تغییر باقی می‌مانند."
+            }
+          ],
+          "exampleSentences": [
+            {
+              "german": "Ich habe einen Hund.",
+              "pronunciation": "ایش هابِه آینِن هوند.",
+              "meaningDari": "من یک سگ دارم."
+            },
+            {
+              "german": "Siehst du den Mann?",
+              "pronunciation": "زیست دو دِن مان؟",
+              "meaningDari": "آیا آن مرد را می‌بینی؟"
+            }
+          ],
+          "exercises": [
+            {
+              "type": "multiple-choice",
+              "question": "Ich kaufe ___ Tisch.",
+              "pronunciation": "ایش کاوفِه ... تیش.",
+              "translationDari": "من میز را می‌خرم.",
+              "options": ["den", "der", "das", "die"],
+              "correctAnswer": "den",
+              "explanationDari": "کلمه Tisch مذکر است و در جایگاه مفعول مستقیم der به den تبدیل می‌شود."
+            }
+          ]
+        }
+        ```
+        ۴. هرگاه کاربر از شما ساخت جمله خواست (مانند «۱۰ جمله بساز»)، جملات را به صورت لیست شماره‌دار با فرمت:
         جمله آلمانی + تلفظ به خط فارسی + ترجمه به زبان دری ارائه دهید.
     """.trimIndent()
 
@@ -169,7 +211,7 @@ class GeminiChatService {
                 val jsonEnd = afterStart.indexOf("```")
                 if (jsonEnd != -1) {
                     val potentialJson = afterStart.substring(0, jsonEnd).trim()
-                    if (potentialJson.contains("\"vocabulary\"") || potentialJson.contains("\"exercises\"")) {
+                    if (potentialJson.contains("\"vocabulary\"") || potentialJson.contains("\"exercises\"") || potentialJson.contains("\"sections\"")) {
                         return potentialJson
                     }
                 }

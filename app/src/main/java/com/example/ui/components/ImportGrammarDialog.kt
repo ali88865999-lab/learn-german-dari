@@ -3,7 +3,6 @@ package com.example.ui.components
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,9 +20,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -42,24 +39,22 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.data.model.LessonData
-import com.example.data.repository.BatchImportResult
+import com.example.data.repository.GrammarBatchImportResult
 import com.example.ui.theme.ErrorRed
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 @Composable
-fun ImportLessonDialog(
+fun ImportGrammarDialog(
     onDismiss: () -> Unit,
-    onImportJson: (String) -> Result<BatchImportResult>,
-    onImportSuccess: (BatchImportResult) -> Unit
+    onImportJson: (String) -> Result<GrammarBatchImportResult>,
+    onImportSuccess: (GrammarBatchImportResult) -> Unit
 ) {
     val context = LocalContext.current
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: انتخاب فایل, 1: چسباندن JSON
+    var selectedTab by remember { mutableIntStateOf(0) } // 0: فایل از حافظه, 1: چسباندن متن
     var pastedJsonText by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Android Storage Access Framework (SAF) File Picker
     val openDocumentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
@@ -76,7 +71,7 @@ fun ImportLessonDialog(
                     onImportSuccess(result.getOrThrow())
                     onDismiss()
                 } else {
-                    errorMessage = result.exceptionOrNull()?.localizedMessage ?: "قالب فایل JSON نامعتبر است."
+                    errorMessage = result.exceptionOrNull()?.localizedMessage ?: "قالب فایل JSON مبحث گرامر نامعتبر است."
                 }
             } catch (e: Exception) {
                 errorMessage = "خطا در خواندن فایل از حافظه گوشی: ${e.localizedMessage}"
@@ -88,7 +83,7 @@ fun ImportLessonDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "افزودن درس یا مجموعه دروس (JSON)",
+                text = "افزودن مبحث یا مباحث گرامر (JSON)",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
@@ -97,7 +92,7 @@ fun ImportLessonDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag("import_lesson_dialog")
+                    .testTag("import_grammar_dialog")
             ) {
                 TabRow(selectedTabIndex = selectedTab) {
                     Tab(
@@ -122,7 +117,7 @@ fun ImportLessonDialog(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "فایل JSON یک درس یا آرایه‌ای از چند درس را از حافظه تلفن همراه انتخاب نمایید.",
+                            text = "فایل JSON یک مبحث یا آرایه‌ای از مباحث گرامر را از حافظه تلفن همراه انتخاب نمایید.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -137,18 +132,18 @@ fun ImportLessonDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
-                                .testTag("btn_pick_lesson_file"),
+                                .testTag("btn_pick_grammar_file"),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Icon(imageVector = Icons.Default.FileOpen, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("انتخاب فایل JSON درس‌ها", fontWeight = FontWeight.Bold)
+                            Text("انتخاب فایل JSON گرامر", fontWeight = FontWeight.Bold)
                         }
                     }
                 } else {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "کد JSON یک درس یا آرایه‌ای از درس‌ها را در کادر زیر بچسبانید:",
+                            text = "کد JSON یک مبحث گرامر یا آرایه‌ای از مباحث را در کادر زیر بچسبانید:",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -161,11 +156,11 @@ fun ImportLessonDialog(
                                 pastedJsonText = it
                                 errorMessage = null
                             },
-                            placeholder = { Text("متن یا آرایه JSON درس‌ها را اینجا بچسبانید...") },
+                            placeholder = { Text("متن یا آرایه JSON مبحث گرامر را اینجا بچسبانید...") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(160.dp)
-                                .testTag("import_paste_textfield"),
+                                .testTag("import_grammar_paste_textfield"),
                             shape = RoundedCornerShape(12.dp)
                         )
 
@@ -182,13 +177,13 @@ fun ImportLessonDialog(
                                     onImportSuccess(result.getOrThrow())
                                     onDismiss()
                                 } else {
-                                    errorMessage = result.exceptionOrNull()?.localizedMessage ?: "قالب JSON نامعتبر است."
+                                    errorMessage = result.exceptionOrNull()?.localizedMessage ?: "قالب JSON مبحث گرامر نامعتبر است."
                                 }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(48.dp)
-                                .testTag("btn_submit_pasted_json"),
+                                .testTag("btn_submit_pasted_grammar_json"),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("بررسی و واردسازی", fontWeight = FontWeight.Bold)
@@ -196,7 +191,6 @@ fun ImportLessonDialog(
                     }
                 }
 
-                // Error Message if invalid
                 if (errorMessage != null) {
                     Spacer(modifier = Modifier.height(12.dp))
                     Surface(

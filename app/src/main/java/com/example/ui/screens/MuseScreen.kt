@@ -51,13 +51,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.LessonData
+import com.example.data.repository.BatchImportResult
 import com.example.ui.components.ImportLessonDialog
 import com.example.ui.theme.AccentAmber
 import com.example.ui.theme.IndigoPrimary
 
 @Composable
 fun MuseScreen(
-    onImportLessonJson: (String) -> Result<LessonData>,
+    onImportJson: (String) -> Result<BatchImportResult>,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -244,9 +245,9 @@ fun MuseScreen(
     if (showImportDialog) {
         ImportLessonDialog(
             onDismiss = { showImportDialog = false },
-            onImportJson = onImportLessonJson,
-            onImportSuccess = { imported ->
-                Toast.makeText(context, "درس «${imported.titleDari}» با موفقیت افزوده شد! ✓", Toast.LENGTH_LONG).show()
+            onImportJson = onImportJson,
+            onImportSuccess = { result ->
+                Toast.makeText(context, result.summaryMessage, Toast.LENGTH_LONG).show()
             }
         )
     }

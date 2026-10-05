@@ -158,4 +158,179 @@ class ExampleRobolectricTest {
         assertNotNull(lesson)
         assertEquals("muse", lesson?.source)
     }
+
+    @Test
+    fun `verify grammarSections and qaPairs parsing and serialization`() {
+        val jsonWithGrammarAndQa = """
+            {
+              "id": "test_grammar_qa",
+              "number": 10,
+              "titleGerman": "Grammatik & Dialog",
+              "titleDari": "گرامر و گفتگو",
+              "vocabulary": [
+                {
+                  "article": "der",
+                  "word": "Kugelschreiber",
+                  "pronunciationPersianScript": "کوگِل‌شرایبِر",
+                  "meaningDari": "خودکار"
+                }
+              ],
+              "grammarSections": [
+                {
+                  "title": "حروف اضافه",
+                  "bodyDari": "توضیح کامل در مورد حروف اضافه زمان و مکان."
+                }
+              ],
+              "qaPairs": [
+                {
+                  "questionGerman": "Hast du einen Stift?",
+                  "questionPronunciation": "هاست دو آینن شتیفت؟",
+                  "questionDari": "آیا قلم داری؟",
+                  "answerGerman": "Ja, hier ist ein Stift.",
+                  "answerPronunciation": "یا، هیر ایست آین شتیفت.",
+                  "answerDari": "بله، اینجا یک قلم است."
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val parseResult = LessonData.parseAndValidate(jsonWithGrammarAndQa)
+        assertTrue(parseResult.isSuccess)
+        val lesson = parseResult.getOrThrow()
+        assertEquals(1, lesson.grammarSections.size)
+        assertEquals("حروف اضافه", lesson.grammarSections.first().title)
+        assertEquals(1, lesson.qaPairs.size)
+        assertEquals("Hast du einen Stift?", lesson.qaPairs.first().questionGerman)
+        assertEquals("Ja, hier ist ein Stift.", lesson.qaPairs.first().answerGerman)
+
+        // Verify toJson preserves them
+        val exportedJson = lesson.toJson()
+        val reimported = LessonData.parseAndValidate(exportedJson)
+        assertTrue(reimported.isSuccess)
+        assertEquals(1, reimported.getOrThrow().grammarSections.size)
+        assertEquals(1, reimported.getOrThrow().qaPairs.size)
+    }
+
+    @Test
+    fun `verify qaPairs validation fails if any of the six fields is empty`() {
+        val invalidQaJson = """
+            {
+              "id": "test_invalid_qa",
+              "number": 10,
+              "titleGerman": "Invalid QA",
+              "titleDari": "تست سوال و جواب ناقص",
+              "vocabulary": [
+                {
+                  "article": "der",
+                  "word": "Stift",
+                  "pronunciationPersianScript": "شتیفت",
+                  "meaningDari": "قلم"
+                }
+              ],
+              "qaPairs": [
+                {
+                  "questionGerman": "Wo ist das?",
+                  "questionPronunciation": "وو ایست داس؟",
+                  "questionDari": "",
+                  "answerGerman": "Hier.",
+                  "answerPronunciation": "هیر.",
+                  "answerDari": "اینجا."
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val parseResult = LessonData.parseAndValidate(invalidQaJson)
+        assertTrue(parseResult.isFailure)
+    }
+
+    @Test
+    fun `verify same-number import replaces existing lesson and delete restores built-in`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val repo = com.example.data.repository.UnifiedCourseRepository.getInstance(context)
+
+        val replacementLessonJson = """
+            {
+              "id": "replacement_lesson_1",
+              "number": 1,
+              "titleGerman": "Ersetzte Lektion 1",
+              "titleDari": "درس ۱ جایگزین شده",
+              "vocabulary": [
+                {
+                  "article": "das",
+                  "word": "Haus",
+                  "pronunciationPersianScript": "هاوس",
+                  "meaningDari": "خانه"
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val importResult = repo.importLesson(replacementLessonJson)
+        assertTrue(importResult.isSuccess)
+
+        val replaced = repo.lessonsFlow.value.find { it.number == 1 }
+        assertNotNull(replaced)
+        assertEquals("Ersetzte Lektion 1", replaced?.titleGerman)
+        assertEquals("درس ۱ جایگزین شده", replaced?.titleDari)
+
+        // Deleting custom/override lesson should restore the built-in one
+        val deleted = repo.deleteCustomLesson("1")
+        assertTrue(deleted)
+
+        val restored = repo.lessonsFlow.value.find { it.number == 1 }
+        assertNotNull(restored)
+        assertEquals("Begrüßung & Vorstellen", restored?.titleGerman)
+    }
+
+    @Test
+    fun `verify batch import supports JSON array and reports summary`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val repo = com.example.data.repository.UnifiedCourseRepository.getInstance(context)
+
+        val jsonArrayStr = """
+            [
+              {
+                "id": "batch_lesson_1",
+                "number": 1,
+                "titleGerman": "Batch 1",
+                "titleDari": "درس ۱ دسته‌ای",
+                "vocabulary": [
+                  {
+                    "article": "der",
+                    "word": "Morgen",
+                    "pronunciationPersianScript": "مورگن",
+                    "meaningDari": "صبح"
+                  }
+                ]
+              },
+              {
+                "id": "batch_lesson_2",
+                "number": 2,
+                "titleGerman": "Batch 2",
+                "titleDari": "درس ۲ دسته‌ای",
+                "vocabulary": [
+                  {
+                    "article": "die",
+                    "word": "Nacht",
+                    "pronunciationPersianScript": "ناخت",
+                    "meaningDari": "شب"
+                  }
+                ]
+              }
+            ]
+        """.trimIndent()
+
+        val batchResult = repo.importJson(jsonArrayStr)
+        assertTrue(batchResult.isSuccess)
+        val result = batchResult.getOrThrow()
+        assertEquals(2, result.totalProcessed)
+        assertEquals(2, result.successCount)
+        assertEquals(0, result.failureCount)
+        assertTrue(result.summaryMessage.contains("۲ درس با موفقیت وارد/جایگزین شد"))
+
+        // Cleanup
+        repo.deleteCustomLesson("1")
+        repo.deleteCustomLesson("2")
+    }
 }

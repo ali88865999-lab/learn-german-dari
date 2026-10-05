@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.outlined.AutoAwesome
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Psychology
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -35,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,10 +50,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.repository.GrammarRepository
 import com.example.data.repository.UnifiedCourseRepository
 import com.example.data.storage.UserProgressManager
 import com.example.ui.screens.DialoguesScreen
 import com.example.ui.screens.GeminiChatScreen
+import com.example.ui.screens.GrammarScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.MuseScreen
 import com.example.ui.screens.NumbersScreen
@@ -66,6 +71,7 @@ enum class NavDestination(
     val testTag: String
 ) {
     HOME("خانه", Icons.Filled.Home, Icons.Outlined.Home, "nav_item_home"),
+    GRAMMAR("گرامر", Icons.Filled.MenuBook, Icons.Outlined.MenuBook, "nav_item_grammar"),
     VOCABULARY("لغات", Icons.Filled.Book, Icons.Outlined.Book, "nav_item_vocab"),
     PRACTICE("تمرین", Icons.Filled.FitnessCenter, Icons.Outlined.FitnessCenter, "nav_item_practice"),
     QUIZ("آزمون", Icons.Filled.Psychology, Icons.Outlined.Psychology, "nav_item_quiz"),
@@ -83,14 +89,19 @@ fun MainScreen(
     val context = LocalContext.current
     val progressManager = remember { UserProgressManager.getInstance(context) }
     val courseRepository = remember { UnifiedCourseRepository.getInstance(context) }
+    val grammarRepository = remember { GrammarRepository.getInstance(context) }
 
     val allLessons by courseRepository.lessonsFlow.collectAsState()
+    val overrideNumbers by courseRepository.overrideNumbersFlow.collectAsState()
+    val allGrammarTopics by grammarRepository.grammarTopicsFlow.collectAsState()
+    val overrideGrammarNumbers by grammarRepository.overrideNumbersFlow.collectAsState()
     val learnedWords by progressManager.learnedWordsFlow.collectAsState()
     val quizHighScore by progressManager.quizHighScoreFlow.collectAsState()
     val savedGeminiKey by progressManager.geminiApiKeyFlow.collectAsState()
 
     var currentTab by remember { mutableStateOf(NavDestination.HOME) }
     var selectedLessonIdForVocab by remember { mutableStateOf("lesson_1") }
+    var selectedLessonSection by remember { mutableIntStateOf(0) }
     var selectedLessonIdForPractice by remember { mutableStateOf("lesson_1") }
     var isNumbersScreenOpen by remember { mutableStateOf(false) }
 
@@ -182,19 +193,34 @@ fun MainScreen(
                                 allLessons = allLessons,
                                 learnedWords = learnedWords,
                                 quizHighScore = quizHighScore,
+                                overrideLessonNumbers = overrideNumbers,
                                 onNavigateToLessonVocab = { lessonId ->
                                     selectedLessonIdForVocab = lessonId
+                                    selectedLessonSection = 0
                                     currentTab = NavDestination.VOCABULARY
                                 },
                                 onNavigateToLessonPractice = { lessonId ->
-                                    selectedLessonIdForPractice = lessonId
-                                    currentTab = NavDestination.PRACTICE
+                                    selectedLessonIdForVocab = lessonId
+                                    selectedLessonSection = 3
+                                    currentTab = NavDestination.VOCABULARY
                                 },
                                 onNavigateToNumbers = { isNumbersScreenOpen = true },
                                 onNavigateToQuiz = { currentTab = NavDestination.QUIZ },
                                 onNavigateToMuse = { currentTab = NavDestination.MUSE },
-                                onImportLesson = { json -> courseRepository.importLesson(json) },
-                                onDeleteCustomLesson = { lessonId -> courseRepository.deleteCustomLesson(lessonId) }
+                                onImportJson = { json -> courseRepository.importJson(json) },
+                                onDeleteCustomLesson = { lessonId -> courseRepository.deleteCustomLesson(lessonId) },
+                                onNavigateToGrammar = { currentTab = NavDestination.GRAMMAR }
+                            )
+                        }
+
+                        NavDestination.GRAMMAR -> {
+                            GrammarScreen(
+                                allTopics = allGrammarTopics,
+                                overrideTopicNumbers = overrideGrammarNumbers,
+                                onImportJson = { json -> grammarRepository.importJson(json) },
+                                onDeleteCustomTopic = { topicId -> grammarRepository.deleteCustomTopic(topicId) },
+                                onPlayAudio = { text, isSlow -> ttsManager.speak(text, isSlow) },
+                                onNavigateToLessons = { currentTab = NavDestination.HOME }
                             )
                         }
 
@@ -206,7 +232,8 @@ fun MainScreen(
                                 onToggleLearned = { wordKey, learned ->
                                     progressManager.setWordLearned(wordKey, learned)
                                 },
-                                onPlayAudio = { text, isSlow -> ttsManager.speak(text, isSlow) }
+                                onPlayAudio = { text, isSlow -> ttsManager.speak(text, isSlow) },
+                                initialSection = selectedLessonSection
                             )
                         }
 
@@ -241,13 +268,14 @@ fun MainScreen(
                                 currentApiKey = effectiveKey,
                                 onSaveApiKey = { key -> progressManager.saveGeminiApiKey(key) },
                                 onImportLessonJson = { json -> courseRepository.importLesson(json) },
-                                onPlayAudio = { text, isSlow -> ttsManager.speak(text, isSlow) }
+                                onPlayAudio = { text, isSlow -> ttsManager.speak(text, isSlow) },
+                                onImportGrammarJson = { json -> grammarRepository.importTopic(json) }
                             )
                         }
 
                         NavDestination.MUSE -> {
                             MuseScreen(
-                                onImportLessonJson = { json -> courseRepository.importLesson(json) }
+                                onImportJson = { json -> courseRepository.importJson(json) }
                             )
                         }
                     }

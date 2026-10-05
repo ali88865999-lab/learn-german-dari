@@ -86,7 +86,7 @@ fun FlipFlashcard(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 290.dp)
+                .heightIn(min = 280.dp)
                 .graphicsLayer {
                     rotationY = rotation
                     cameraDistance = 12f * density
@@ -99,19 +99,19 @@ fun FlipFlashcard(
                 .testTag("flashcard_tap_target"),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .padding(18.dp)
             ) {
                 if (rotation <= 90f) {
                     // Front Content: German Word + Article + Persian Pronunciation + Audio Buttons
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         // Header: Article & Learned badge
                         Row(
@@ -219,13 +219,13 @@ fun FlipFlashcard(
                     // Back Content: Dari Meaning + Example Sentence
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
                             .graphicsLayer { rotationY = 180f }
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.SpaceBetween
+                            verticalArrangement = Arrangement.spacedBy(14.dp)
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
@@ -240,63 +240,57 @@ fun FlipFlashcard(
                                 )
                             }
 
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = item.meaningDari,
-                                    style = MaterialTheme.typography.headlineMedium.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    textAlign = TextAlign.Center
-                                )
+                            Text(
+                                text = item.meaningDari,
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center
+                            )
 
-                                if (example != null) {
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Surface(
-                                        shape = RoundedCornerShape(14.dp),
-                                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Column(modifier = Modifier.padding(12.dp)) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                                                    Text(
-                                                        text = example.german,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 14.sp,
-                                                        color = MaterialTheme.colorScheme.primary,
-                                                        modifier = Modifier.weight(1f)
-                                                    )
-                                                }
-
-                                                AudioSpeechButtons(
-                                                    textToSpeak = example.german,
-                                                    onPlayAudio = onPlayAudio,
-                                                    size = 34
+                            if (example != null) {
+                                Surface(
+                                    shape = RoundedCornerShape(14.dp),
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(modifier = Modifier.padding(14.dp)) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                                                Text(
+                                                    text = example.german,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 15.sp,
+                                                    color = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.weight(1f)
                                                 )
                                             }
 
-                                            Spacer(modifier = Modifier.height(4.dp))
-                                            Text(
-                                                text = "تلفظ: ${example.pronunciation}",
-                                                fontSize = 12.sp,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-
-                                            Spacer(modifier = Modifier.height(2.dp))
-                                            Text(
-                                                text = "معنی: ${example.meaningDari}",
-                                                fontSize = 12.sp,
-                                                color = MaterialTheme.colorScheme.onSurface
+                                            AudioSpeechButtons(
+                                                textToSpeak = example.german,
+                                                onPlayAudio = onPlayAudio,
+                                                size = 34
                                             )
                                         }
+
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text(
+                                            text = "تلفظ: ${example.pronunciation}",
+                                            fontSize = 13.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = "معنی: ${example.meaningDari}",
+                                            fontSize = 13.sp,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
                                     }
                                 }
                             }
@@ -304,7 +298,9 @@ fun FlipFlashcard(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 4.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Flip,

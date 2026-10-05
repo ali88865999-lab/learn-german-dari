@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.gemini.ChatMessage
 import com.example.data.gemini.GeminiChatService
+import com.example.data.model.GrammarTopic
 import com.example.data.model.LessonData
 import com.example.ui.theme.AccentAmber
 import com.example.ui.theme.IndigoPrimary
@@ -83,6 +84,7 @@ fun GeminiChatScreen(
     onSaveApiKey: (String) -> Unit,
     onImportLessonJson: (String) -> Result<LessonData>,
     onPlayAudio: (String, Boolean) -> Unit,
+    onImportGrammarJson: ((String) -> Result<GrammarTopic>)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -112,6 +114,7 @@ fun GeminiChatScreen(
     }
 
     val quickPrompts = listOf(
+        "یک مبحث گرامر کاربردی با تمرین و مثال بساز",
         "۱۰ سوال تمرینی سطح A1 برایم بساز",
         "۱۰ جمله درباره سفارش غذا با تلفظ بساز",
         "تفاوت der و die و das را به دری توضیح بده",
@@ -196,7 +199,7 @@ fun GeminiChatScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = if (currentApiKey.isNotEmpty()) "کلید API فعال است ✓" else "نیاز به کلید API",
+                            text = if (currentApiKey.isNotEmpty()) "کلید API فعال است ✓ (تلفظ طبیعی جیمنای)" else "نیاز به کلید API",
                             fontSize = 11.sp,
                             color = if (currentApiKey.isNotEmpty()) SuccessGreen else AccentAmber
                         )
@@ -232,11 +235,20 @@ fun GeminiChatScreen(
                 ChatBubble(
                     message = msg,
                     onImportLessonJson = { json ->
-                        val res = onImportLessonJson(json)
-                        if (res.isSuccess) {
-                            Toast.makeText(context, "درس جدید با موفقیت به بخش دروس اضافه شد! ✓", Toast.LENGTH_LONG).show()
+                        if (json.contains("\"sections\"") && !json.contains("\"vocabulary\"") && onImportGrammarJson != null) {
+                            val res = onImportGrammarJson(json)
+                            if (res.isSuccess) {
+                                Toast.makeText(context, "مبحث گرامر جدید با موفقیت به بخش گرامر اضافه شد! ✓", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(context, "خطا در واردسازی گرامر: ${res.exceptionOrNull()?.localizedMessage}", Toast.LENGTH_LONG).show()
+                            }
                         } else {
-                            Toast.makeText(context, "خطا: ${res.exceptionOrNull()?.localizedMessage}", Toast.LENGTH_LONG).show()
+                            val res = onImportLessonJson(json)
+                            if (res.isSuccess) {
+                                Toast.makeText(context, "درس جدید با موفقیت به بخش دروس اضافه شد! ✓", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(context, "خطا: ${res.exceptionOrNull()?.localizedMessage}", Toast.LENGTH_LONG).show()
+                            }
                         }
                     },
                     onCopyText = { text ->
@@ -396,8 +408,9 @@ private fun ChatBubble(
                     }
                 }
 
-                // If Lesson JSON was detected, offer 1-tap import!
+                // If Lesson or Grammar JSON was detected, offer 1-tap import!
                 if (!isUser && message.extractedLessonJson != null) {
+                    val isGrammar = message.extractedLessonJson.contains("\"sections\"") && !message.extractedLessonJson.contains("\"vocabulary\"")
                     Spacer(modifier = Modifier.height(10.dp))
                     Button(
                         onClick = { onImportLessonJson(message.extractedLessonJson) },
@@ -409,7 +422,11 @@ private fun ChatBubble(
                     ) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = null)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("افزودن به تمرین‌های من", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Text(
+                            text = if (isGrammar) "افزودن به مباحث گرامر" else "افزودن به درس‌های من",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp
+                        )
                     }
                 }
             }
@@ -457,6 +474,33 @@ private fun ApiKeySettingsDialog(
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.VolumeUp,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "🎙️ با فعال بودن کلید API، تلفظ صوتی واژگان و جملات با صدای فوق‌العاده طبیعی هوش مصنوعی جیمنای پخش می‌شود (و برای دکمه ۰.۶x شمرده و گام‌به‌گام ادا خواهد شد).",
+                            fontSize = 11.5.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
             }
         },
         confirmButton = {

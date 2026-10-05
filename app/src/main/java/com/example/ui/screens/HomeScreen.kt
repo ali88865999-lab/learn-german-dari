@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.School
@@ -41,6 +42,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -60,6 +62,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.LessonData
+import com.example.data.repository.BatchImportResult
 import com.example.ui.components.ImportLessonDialog
 import com.example.ui.theme.AccentAmber
 import com.example.ui.theme.IndigoPrimary
@@ -71,13 +74,15 @@ fun HomeScreen(
     allLessons: List<LessonData>,
     learnedWords: Set<String>,
     quizHighScore: Int,
+    overrideLessonNumbers: Set<Int> = emptySet(),
     onNavigateToLessonVocab: (String) -> Unit,
     onNavigateToLessonPractice: (String) -> Unit,
     onNavigateToNumbers: () -> Unit,
     onNavigateToQuiz: () -> Unit,
     onNavigateToMuse: () -> Unit,
-    onImportLesson: (String) -> Result<LessonData>,
+    onImportJson: (String) -> Result<BatchImportResult>,
     onDeleteCustomLesson: (String) -> Unit,
+    onNavigateToGrammar: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -102,6 +107,49 @@ fun HomeScreen(
                 totalWords = totalWords,
                 quizHighScore = quizHighScore
             )
+        }
+
+        // Two Libraries Switcher: «درس‌ها» و «گرامر»
+        item {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = { /* Already on lessons library */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp)
+                            .testTag("btn_tab_lessons_active"),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Icon(Icons.Default.School, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("درس‌ها", fontWeight = FontWeight.Bold, fontSize = 13.5.sp)
+                    }
+
+                    OutlinedButton(
+                        onClick = onNavigateToGrammar,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp)
+                            .testTag("btn_tab_grammar_shortcut"),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("گرامر", fontWeight = FontWeight.Bold, fontSize = 13.5.sp)
+                    }
+                }
+            }
         }
 
         // Prominent Button: «افزودن درس جدید»
@@ -280,6 +328,19 @@ fun HomeScreen(
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onBackground
                 )
+
+                TextButton(
+                    onClick = onNavigateToGrammar,
+                    modifier = Modifier.testTag("btn_header_grammar")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MenuBook,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("کتابخانه گرامر", fontSize = 12.5.sp, fontWeight = FontWeight.SemiBold)
+                }
             }
         }
 
@@ -290,7 +351,7 @@ fun HomeScreen(
                 learnedWords.contains("${lesson.id}_${it.word}")
             }
             val progress = if (totalWordsInLesson > 0) learnedInLesson.toFloat() / totalWordsInLesson.toFloat() else 0f
-            val isCustom = lesson.number > 8 || !lesson.id.startsWith("lesson_")
+            val isCustom = overrideLessonNumbers.contains(lesson.number) || lesson.number > 8 || !lesson.id.startsWith("lesson_")
             val isFromMuse = lesson.source?.trim()?.lowercase() == "muse"
 
             Card(
@@ -366,7 +427,7 @@ fun HomeScreen(
 
                         if (isCustom) {
                             IconButton(
-                                onClick = { onDeleteCustomLesson(lesson.id) },
+                                onClick = { onDeleteCustomLesson(lesson.number.toString()) },
                                 modifier = Modifier.size(36.dp)
                             ) {
                                 Icon(
@@ -445,9 +506,9 @@ fun HomeScreen(
     if (showImportDialog) {
         ImportLessonDialog(
             onDismiss = { showImportDialog = false },
-            onImportJson = onImportLesson,
-            onImportSuccess = { imported ->
-                Toast.makeText(context, "درس «${imported.titleDari}» با موفقیت افزوده شد! ✓", Toast.LENGTH_LONG).show()
+            onImportJson = onImportJson,
+            onImportSuccess = { result ->
+                Toast.makeText(context, result.summaryMessage, Toast.LENGTH_LONG).show()
             }
         )
     }

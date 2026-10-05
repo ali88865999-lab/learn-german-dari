@@ -4,7 +4,9 @@ import com.example.data.model.DialogueItem
 import com.example.data.model.DialogueLineItem
 import com.example.data.model.ExampleSentence
 import com.example.data.model.ExerciseItem
+import com.example.data.model.GrammarSection
 import com.example.data.model.LessonData
+import com.example.data.model.QaPair
 import com.example.data.model.VocabularyItem
 
 object BuiltInCourseData {
@@ -88,6 +90,50 @@ object BuiltInCourseData {
                         DialogueLineItem("سارا", "Ich komme aus Deutschland. Willkommen!", "ایش کومه آوس دویچلند. ویلکومِن!", "من اهل آلمان هستم. خوش آمدید!")
                     )
                 )
+            ),
+            grammarSections = listOf(
+                GrammarSection(
+                    title = "افعال مهم برای سلام و معرفی (heißen, sein, kommen, wohnen)",
+                    bodyDari = "در زبان آلمانی، افعال برای اشخاص مختلف پسوند می‌گیرند:\n\n• فعل heißen (نامیده شدن):\n- Ich heiße... (من نامیده می‌شوم / نام من ... است)\n- Du heißt... (تو نامیده می‌شوی)\n- Er/Sie heißt... (او نامیده می‌شود)\n- Wie heißen Sie? (نام شما چیست؟ - رسمی)\n\n• فعل sein (بودن):\n- Ich bin... (من هستم)\n- Du bist... (تو هستی)\n- Er/Sie ist... (او هست)\n- Wir/Sie sind (ما هستیم / شما هستید)\n\n• فعل kommen (آمدن / اهل جایی بودن):\n- Ich komme aus Afghanistan. (من از افغانستان می‌آیم)\n- Woher kommen Sie? (شما اهل کجا هستید؟)\n\n• فعل wohnen (سکونت داشتن):\n- Ich wohne in Berlin. (من در برلین زندگی می‌کنم)"
+                ),
+                GrammarSection(
+                    title = "احوال‌پرسی رسمی و دوستانه",
+                    bodyDari = "• Guten Tag (روز بخیر) و Auf Wiedersehen (به امید دیدار) رسمی هستند.\n• Hallo (سلام) و Tschüss (خداحافظ) دوستانه و صمیمانه هستند."
+                )
+            ),
+            qaPairs = listOf(
+                QaPair(
+                    questionGerman = "Wie heißen Sie?",
+                    questionPronunciation = "وی هایسِن زی؟",
+                    questionDari = "نام شما چیست؟ (رسمی)",
+                    answerGerman = "Ich heiße Ahmad.",
+                    answerPronunciation = "ایش هایسه احمد.",
+                    answerDari = "نام من احمد است."
+                ),
+                QaPair(
+                    questionGerman = "Woher kommen Sie?",
+                    questionPronunciation = "ووهِر کومِن زی؟",
+                    questionDari = "شما اهل کجا هستید؟",
+                    answerGerman = "Ich komme aus Afghanistan.",
+                    answerPronunciation = "ایش کومه آوس افغانستان.",
+                    answerDari = "من اهل افغانستان هستم."
+                ),
+                QaPair(
+                    questionGerman = "Wo wohnen Sie jetzt?",
+                    questionPronunciation = "وو وونِن زی یِتست؟",
+                    questionDari = "اکنون در کجا زندگی می‌کنید؟",
+                    answerGerman = "Ich wohne in Berlin.",
+                    answerPronunciation = "ایش وونه این برلین.",
+                    answerDari = "من در برلین زندگی می‌کنم."
+                ),
+                QaPair(
+                    questionGerman = "Wie geht es Ihnen?",
+                    questionPronunciation = "وی گِیت اِس اینِن؟",
+                    questionDari = "حال شما چطور است؟",
+                    answerGerman = "Danke, sehr gut!",
+                    answerPronunciation = "دانکه، زِر گوت!",
+                    answerDari = "تشکر، بسیار خوبم!"
+                )
             )
         ),
 
@@ -166,6 +212,42 @@ object BuiltInCourseData {
                         DialogueLineItem("لوکاس", "Und wie ist deine E-Mail?", "اونت وی ایست داینه ایمیل؟", "و ایمیل تو چیست؟"),
                         DialogueLineItem("احمد", "ahmad Punkt kabul ät email Punkt de.", "احمد پونکت کابل اَت ایمیل پونکت دِ اِ.", "ahmad.kabul@email.de")
                     )
+                )
+            ),
+            grammarSections = listOf(
+                GrammarSection(
+                    title = "افعال haben, lernen و فعل نامنظم sprechen",
+                    bodyDari = "• فعل haben (داشتن):\n- Ich habe (من دارم)\n- Du hast (تو داری)\n- Er/Sie hat (او دارد)\n- Wir haben (ما داریم)\n\n• فعل نامنظم sprechen (صحبت کردن / گپ زدن):\nدر این فعل حرف e به i تبدیل می‌شود:\n- Ich spreche (من گپ می‌زنم)\n- Du sprichst (تو گپ می‌زنی)\n- Er/Sie spricht (او گپ می‌زند)\n- Wir sprechen (ما گپ می‌زنیم)"
+                ),
+                GrammarSection(
+                    title = "مؤنث کردن شغل‌ها با پسوند in-",
+                    bodyDari = "در آلمانی برای شغل خانم‌ها، معمولاً پسوند in- اضافه می‌شود:\n• der Lehrer (معلم آقا) ← die Lehrerin (معلم خانم)\n• der Arzt (داکتر آقا) ← die Ärztin (داکتر خانم)\n• der Student (محصل آقا) ← die Studentin (محصله خانم)"
+                )
+            ),
+            qaPairs = listOf(
+                QaPair(
+                    questionGerman = "Was sind Sie von Beruf?",
+                    questionPronunciation = "واس زینت زی فون بِروف؟",
+                    questionDari = "شغل شما چیست؟",
+                    answerGerman = "Ich bin Lehrer von Beruf.",
+                    answerPronunciation = "ایش بین لِرِر فون بِروف.",
+                    answerDari = "شغل من معلمی است."
+                ),
+                QaPair(
+                    questionGerman = "Welche Sprachen sprichst du?",
+                    questionPronunciation = "وِلخه شپراخِن شپریخست دو؟",
+                    questionDari = "به چه زبان‌هایی صحبت می‌کنی؟",
+                    answerGerman = "Ich spreche Dari und lerne Deutsch.",
+                    answerPronunciation = "ایش شپرِخه دری اونت لِرنه دویچ.",
+                    answerDari = "من دری گپ می‌زنم و آلمانی یاد می‌گیرم."
+                ),
+                QaPair(
+                    questionGerman = "Wie ist deine Handynummer?",
+                    questionPronunciation = "وی ایست داینه هندی‌نومِر؟",
+                    questionDari = "شماره مبایل تو چیست؟",
+                    answerGerman = "Meine Handynummer ist 0176 12345.",
+                    answerPronunciation = "ماینه هندی‌نومِر ایست نول آینس زیبِن...",
+                    answerDari = "شماره من ۰۱۷۶۱۲۳۴۵ است."
                 )
             )
         ),
@@ -246,6 +328,34 @@ object BuiltInCourseData {
                         DialogueLineItem("معلم", "W-Ö-R-T-E-R-B-U-C-H.", "و-او-ار-ت-ا-ار-ب-او-ث-ها.", "W-Ö-R-T-E-R-B-U-C-H")
                     )
                 )
+            ),
+            grammarSections = listOf(
+                GrammarSection(
+                    title = "حروف تعریف معین (der, die, das)",
+                    bodyDari = "در زبان آلمانی هر اسم یک جنسیت و حرف تعریف مشخص دارد:\n• der (آبی): مذکر مانند der Tisch (میز)، der Stuhl (چوکی)\n• die (سرخ): مؤنث مانند die Tasche (بکس)، die Brille (عینک)\n• das (سبز): خنثی مانند das Buch (کتاب)، das Handy (مبایل)\n• die (جمع): برای حالت جمع تمام کلمات از die استفاده می‌شود."
+                ),
+                GrammarSection(
+                    title = "حروف تعریف نامعین (ein / eine) و منفی (kein / keine)",
+                    bodyDari = "• برای مذکر و خنثی: ein (مثبت) و kein (منفی):\n- Das ist ein Stift. (این یک قلم است)\n- Das ist kein Stift. (این قلم نیست)\n\n• برای مؤنث: eine (مثبت) و keine (منفی):\n- Das ist eine Lampe. (این یک چراغ است)\n- Das ist keine Lampe. (این چراغ نیست)"
+                )
+            ),
+            qaPairs = listOf(
+                QaPair(
+                    questionGerman = "Wie heißt das auf Deutsch?",
+                    questionPronunciation = "وی هایست داس آوف دویچ؟",
+                    questionDari = "این به آلمانی چه نام دارد؟",
+                    answerGerman = "Das ist ein Schlüssel.",
+                    answerPronunciation = "داس ایست آین شلوسل.",
+                    answerDari = "این یک کلید است."
+                ),
+                QaPair(
+                    questionGerman = "Ist das ein Computer?",
+                    questionPronunciation = "ایست داس آین کامپیوتر؟",
+                    questionDari = "آیا این یک کمپیوتر است؟",
+                    answerGerman = "Nein, das ist kein Computer.",
+                    answerPronunciation = "ناین، داس ایست کاین کامپیوتر.",
+                    answerDari = "خیر، این کمپیوتر نیست."
+                )
             )
         ),
 
@@ -324,6 +434,34 @@ object BuiltInCourseData {
                         DialogueLineItem("مشتری", "Zahlen, bitte!", "تسالِن، بیته!", "حساب، لطفاً!"),
                         DialogueLineItem("پیشخدمت", "Das macht zusammen 4 Euro 50.", "داس ماخت تسوزامِن فیر اویو فونسیش.", "مجموعاً می‌شود ۴ یورو و ۵۰ سنت.")
                     )
+                )
+            ),
+            grammarSections = listOf(
+                GrammarSection(
+                    title = "حالت مفعولی (Akkusativ) در سفارش دادن",
+                    bodyDari = "هنگام سفارش غذا و نوشیدنی با فعل möchten (خواستن / میل داشتن):\n• اسم مذکر der تبدیل به den یا einen می‌شود:\n- Ich möchte einen Kaffee. (من یک قهوه می‌خواهم)\n• اسم خنثی و مؤنث بدون تغییر می‌مانند:\n- ein Wasser (یک آب)\n- eine Cola (یک نوشابه)"
+                ),
+                GrammarSection(
+                    title = "پرداخت و صورت‌حساب در کافه",
+                    bodyDari = "• Zahlen, bitte! (حساب لطفاً!)\n• Zusammen oder getrennt? (یکجا پرداخت می‌کنید یا جداگانه؟)\n• Stimmt so! (باقی پول را نگه دارید / انعام)"
+                )
+            ),
+            qaPairs = listOf(
+                QaPair(
+                    questionGerman = "Was möchten Sie trinken?",
+                    questionPronunciation = "واس موشتِن زی ترینکِن؟",
+                    questionDari = "چه میل دارید بنوشید؟",
+                    answerGerman = "Einen Kaffee mit Milch, bitte.",
+                    answerPronunciation = "آینِن کافه میت میلش، بیته.",
+                    answerDari = "یک قهوه با شیر، لطفاً."
+                ),
+                QaPair(
+                    questionGerman = "Zusammen oder getrennt?",
+                    questionPronunciation = "تسوزامِن اودِر گِترِنت؟",
+                    questionDari = "یکجا حساب می‌کنید یا جدا؟",
+                    answerGerman = "Getrennt, bitte.",
+                    answerPronunciation = "گِترِنت، بیته.",
+                    answerDari = "جداگانه، لطفاً."
                 )
             )
         ),
@@ -404,6 +542,34 @@ object BuiltInCourseData {
                         DialogueLineItem("احمد", "Am Sonntag schlafe ich bis 9 Uhr.", "آم زونتاگ شلافه ایش بیس نوین اوور.", "یکشنبه تا ساعت ۹ می‌خوابم.")
                     )
                 )
+            ),
+            grammarSections = listOf(
+                GrammarSection(
+                    title = "افعال جداشدنی (Trennbare Verben)",
+                    bodyDari = "در این افعال، پیشوند جدا شده و به انتهای جمله منتقل می‌شود:\n• aufstehen (بیدار شدن):\nIch stehe um 7 Uhr auf.\n• einkaufen (خرید کردن):\nEr kauft am Samstag ein."
+                ),
+                GrammarSection(
+                    title = "حروف اضافه زمان (am و um)",
+                    bodyDari = "• برای روزهای هفته از am استفاده می‌شود: am Montag (دوشنبه), am Freitag (جمعه)\n• برای ساعات دقیق از um استفاده می‌شود: um 8 Uhr (در ساعت ۸)"
+                )
+            ),
+            qaPairs = listOf(
+                QaPair(
+                    questionGerman = "Wann stehst du auf?",
+                    questionPronunciation = "وان شتیست دو آوف؟",
+                    questionDari = "چه ساعتی بیدار می‌شوی؟",
+                    answerGerman = "Ich stehe um 7 Uhr auf.",
+                    answerPronunciation = "ایش شتیه اوم زیبِن اوور آوف.",
+                    answerDari = "من ساعت ۷ بیدار می‌شوم."
+                ),
+                QaPair(
+                    questionGerman = "Wie spät ist es?",
+                    questionPronunciation = "وی شپِیت ایست اِس؟",
+                    questionDari = "ساعت چند است؟",
+                    answerGerman = "Es ist genau 8 Uhr.",
+                    answerPronunciation = "اِس ایست گِناو آخت اوور.",
+                    answerDari = "دقیقاً ساعت ۸ است."
+                )
             )
         ),
 
@@ -482,6 +648,30 @@ object BuiltInCourseData {
                         DialogueLineItem("میزبان", "Möchtest du noch etwas Reis?", "مِشتِست دو نوخ اِتواس رایس؟", "آیا کمی دیگر برنج میل داری؟"),
                         DialogueLineItem("مهمان", "Nein danke, ich bin satt.", "ناین دانکه، ایش بین زات.", "نه ممنون، من سیر هستم.")
                     )
+                )
+            ),
+            grammarSections = listOf(
+                GrammarSection(
+                    title = "بیان علاقه و طعم غذا (schmecken, gern, mögen)",
+                    bodyDari = "• فعل schmecken (مزه دادن):\n- Das schmeckt sehr gut! (بسیار خوشمزه است!)\n• استفاده از gern (با علاقه):\n- Ich esse gern Reis. (من با علاقه برنج می‌خورم)\n• فعل mögen (دوست داشتن):\n- Ich mag Obst. (من میوه دوست دارم)"
+                )
+            ),
+            qaPairs = listOf(
+                QaPair(
+                    questionGerman = "Wie schmeckt das Essen?",
+                    questionPronunciation = "وی شمِکت داس اِسِن؟",
+                    questionDari = "طعم غذا چطور است؟",
+                    answerGerman = "Es schmeckt fantastisch!",
+                    answerPronunciation = "اِس شمِکت فانتَستیش!",
+                    answerDari = "مزه فوق‌العاده‌ای دارد!"
+                ),
+                QaPair(
+                    questionGerman = "Was isst du gern?",
+                    questionPronunciation = "واس ایست دو گِرن؟",
+                    questionDari = "چه غذایی دوست داری؟",
+                    answerGerman = "Ich esse gern Fisch und Reis.",
+                    answerPronunciation = "ایش اِسه گِرن فیش اونت رایس.",
+                    answerDari = "من ماهی و برنج را با علاقه می‌خورم."
                 )
             )
         ),
@@ -562,6 +752,30 @@ object BuiltInCourseData {
                         DialogueLineItem("مریم", "Sie ist fünfzehn Jahre alt.", "زی ایست فونس‌تسن یاره آلت.", "او ۱۵ ساله است.")
                     )
                 )
+            ),
+            grammarSections = listOf(
+                GrammarSection(
+                    title = "ضمایر ملکی (mein / dein)",
+                    bodyDari = "• برای اسم مذکر و خنثی: mein (مال من) / dein (مال تو):\n- mein Vater (پدرم), mein Bruder (برادرم), mein Kind (فرزندم)\n• برای اسم مؤنث و جمع: meine (مال من) / deine (مال تو):\n- meine Mutter (مادرم), meine Schwester (خواهرم), meine Eltern (والدینم)"
+                )
+            ),
+            qaPairs = listOf(
+                QaPair(
+                    questionGerman = "Hast du Geschwister?",
+                    questionPronunciation = "هاست دو گِشوِستِر؟",
+                    questionDari = "آیا خواهر یا برادر داری؟",
+                    answerGerman = "Ja, ich habe zwei Brüder.",
+                    answerPronunciation = "یا، ایش هابه تسوای برودِر.",
+                    answerDari = "بله، من دو برادر دارم."
+                ),
+                QaPair(
+                    questionGerman = "Wer ist das?",
+                    questionPronunciation = "وِر ایست داس؟",
+                    questionDari = "این شخص کیست؟",
+                    answerGerman = "Das ist meine Mutter.",
+                    answerPronunciation = "داس ایست ماینه موتِر.",
+                    answerDari = "این مادر من است."
+                )
             )
         ),
 
@@ -641,6 +855,30 @@ object BuiltInCourseData {
                         DialogueLineItem("مستأجر", "Gibt es auch einen Balkon?", "گیبت اِس آوخ آینِن بالکون؟", "آیا بالکن هم دارد؟"),
                         DialogueLineItem("صاحب‌خانه", "Ja, einen schönen großen Balkon.", "یا، آینِن شونِن گروسِن بالکون.", "بله، یک بالکن قشنگ و بزرگ.")
                     )
+                )
+            ),
+            grammarSections = listOf(
+                GrammarSection(
+                    title = "نام اتاق‌ها و وسایل خانه",
+                    bodyDari = "• اتاق‌ها در خانه:\n- das Wohnzimmer (اتاق نشیمن / هال)\n- das Schlafzimmer (اتاق خواب)\n- die Küche (آشپزخانه)\n- das Bad (حمام)\n• صفت‌های توصیف خانه:\n- groß (بزرگ), hell (روشن), ruhig (آرام)"
+                )
+            ),
+            qaPairs = listOf(
+                QaPair(
+                    questionGerman = "Wie ist deine Wohnung?",
+                    questionPronunciation = "وی ایست داینه وونونگ؟",
+                    questionDari = "خانه‌ات چطور است؟",
+                    answerGerman = "Sie ist sehr groß und ruhig.",
+                    answerPronunciation = "زی ایست زِر گروس اونت روهیش.",
+                    answerDari = "بسیار بزرگ و آرام است."
+                ),
+                QaPair(
+                    questionGerman = "Wie viele Zimmer hat das Haus?",
+                    questionPronunciation = "وی فیلِه تسیمِر هات داس هاوس؟",
+                    questionDari = "خانه چند اتاق دارد؟",
+                    answerGerman = "Das Haus hat vier Zimmer.",
+                    answerPronunciation = "داس هاوس هات فیر تسیمِر.",
+                    answerDari = "خانه دارای چهار اتاق است."
                 )
             )
         )

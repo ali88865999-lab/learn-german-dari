@@ -160,6 +160,7 @@ fun QuizScreen(
                 item {
                     var answeredThisCorrectly by remember(currentExercise) { mutableStateOf<Boolean?>(null) }
 
+                    Spacer(modifier = Modifier.height(6.dp))
                     ExactExerciseQuestionView(
                         exercise = currentExercise,
                         questionNumber = currentQIndex + 1,
@@ -187,7 +188,8 @@ fun QuizScreen(
                             }
                         },
                         onPlayAudio = onPlayAudio,
-                        nextButtonText = if (currentQIndex < quizQuestions.size - 1) "سوال بعدی" else "مشاهده کارنامه نهایی"
+                        nextButtonText = if (currentQIndex < quizQuestions.size - 1) "سوال بعدی" else "مشاهده کارنامه نهایی",
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
             }

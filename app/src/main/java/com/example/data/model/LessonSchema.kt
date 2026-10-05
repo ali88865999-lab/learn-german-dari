@@ -188,6 +188,76 @@ data class DialogueItem(
     }
 }
 
+data class GrammarSection(
+    val title: String,
+    val bodyDari: String
+) {
+    fun toJsonObject(): JSONObject = JSONObject().apply {
+        put("title", title)
+        put("bodyDari", bodyDari)
+    }
+
+    companion object {
+        fun fromJsonObject(obj: JSONObject): GrammarSection {
+            val title = obj.getString("title").trim()
+            val bodyDari = obj.getString("bodyDari").trim()
+
+            require(title.isNotEmpty()) { "عنوان بخش گرامر (title) نمی‌تواند خالی باشد." }
+            require(bodyDari.isNotEmpty()) { "متن توضیح گرامر (bodyDari) نمی‌تواند خالی باشد." }
+
+            return GrammarSection(
+                title = title,
+                bodyDari = bodyDari
+            )
+        }
+    }
+}
+
+data class QaPair(
+    val questionGerman: String,
+    val questionPronunciation: String,
+    val questionDari: String,
+    val answerGerman: String,
+    val answerPronunciation: String,
+    val answerDari: String
+) {
+    fun toJsonObject(): JSONObject = JSONObject().apply {
+        put("questionGerman", questionGerman)
+        put("questionPronunciation", questionPronunciation)
+        put("questionDari", questionDari)
+        put("answerGerman", answerGerman)
+        put("answerPronunciation", answerPronunciation)
+        put("answerDari", answerDari)
+    }
+
+    companion object {
+        fun fromJsonObject(obj: JSONObject): QaPair {
+            val questionGerman = obj.getString("questionGerman").trim()
+            val questionPronunciation = obj.getString("questionPronunciation").trim()
+            val questionDari = obj.getString("questionDari").trim()
+            val answerGerman = obj.getString("answerGerman").trim()
+            val answerPronunciation = obj.getString("answerPronunciation").trim()
+            val answerDari = obj.getString("answerDari").trim()
+
+            require(questionGerman.isNotEmpty()) { "سوال آلمانی (questionGerman) الزامی است." }
+            require(questionPronunciation.isNotEmpty()) { "تلفظ سوال به خط فارسی (questionPronunciation) الزامی است." }
+            require(questionDari.isNotEmpty()) { "ترجمه سوال به دری (questionDari) الزامی است." }
+            require(answerGerman.isNotEmpty()) { "پاسخ آلمانی (answerGerman) الزامی است." }
+            require(answerPronunciation.isNotEmpty()) { "تلفظ پاسخ به خط فارسی (answerPronunciation) الزامی است." }
+            require(answerDari.isNotEmpty()) { "ترجمه پاسخ به دری (answerDari) الزامی است." }
+
+            return QaPair(
+                questionGerman = questionGerman,
+                questionPronunciation = questionPronunciation,
+                questionDari = questionDari,
+                answerGerman = answerGerman,
+                answerPronunciation = answerPronunciation,
+                answerDari = answerDari
+            )
+        }
+    }
+}
+
 data class LessonData(
     val id: String,
     val number: Int,
@@ -197,6 +267,8 @@ data class LessonData(
     val exampleSentences: List<ExampleSentence>,
     val exercises: List<ExerciseItem>,
     val dialogues: List<DialogueItem>,
+    val grammarSections: List<GrammarSection> = emptyList(),
+    val qaPairs: List<QaPair> = emptyList(),
     val source: String? = null
 ) {
     fun toJson(): String {
@@ -224,6 +296,18 @@ data class LessonData(
             val dialoguesArray = JSONArray()
             dialogues.forEach { dialoguesArray.put(it.toJsonObject()) }
             put("dialogues", dialoguesArray)
+
+            if (grammarSections.isNotEmpty()) {
+                val gArray = JSONArray()
+                grammarSections.forEach { gArray.put(it.toJsonObject()) }
+                put("grammarSections", gArray)
+            }
+
+            if (qaPairs.isNotEmpty()) {
+                val qaArray = JSONArray()
+                qaPairs.forEach { qaArray.put(it.toJsonObject()) }
+                put("qaPairs", qaArray)
+            }
         }
         return root.toString(2)
     }
@@ -279,6 +363,22 @@ data class LessonData(
                     }
                 }
 
+                val grammarList = mutableListOf<GrammarSection>()
+                if (root.has("grammarSections")) {
+                    val gArray = root.getJSONArray("grammarSections")
+                    for (i in 0 until gArray.length()) {
+                        grammarList.add(GrammarSection.fromJsonObject(gArray.getJSONObject(i)))
+                    }
+                }
+
+                val qaList = mutableListOf<QaPair>()
+                if (root.has("qaPairs")) {
+                    val qaArray = root.getJSONArray("qaPairs")
+                    for (i in 0 until qaArray.length()) {
+                        qaList.add(QaPair.fromJsonObject(qaArray.getJSONObject(i)))
+                    }
+                }
+
                 LessonData(
                     id = id,
                     number = number,
@@ -288,6 +388,8 @@ data class LessonData(
                     exampleSentences = examplesList,
                     exercises = exercisesList,
                     dialogues = dialoguesList,
+                    grammarSections = grammarList,
+                    qaPairs = qaList,
                     source = source
                 )
             }
